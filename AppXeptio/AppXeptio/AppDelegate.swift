@@ -14,24 +14,22 @@ import FirebaseCore
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // * * * Firebase setup
-        FirebaseApp.configure()
-
         // * * * Axeptio setup
-        let targetService: AxeptioService = .brands
-
         // sample init
         Axeptio.shared.initialize(
-            targetService: targetService,
-            clientId: "<Your Client ID>",
-            cookiesVersion: "<Your Cookies Version>"
+            targetService: .brands,
+            clientId: "679901100d9a47f71b01afdf",
+            cookiesVersion: "appxeptio-en-MX-LAT"
         )
 
         // or with a token set from an other device (you are in charge to store and pass the token along between devices)
         //Axeptio.shared.initialize(targetService: targetService, clientId: "<Your Client ID>", cookiesVersion: "<Your Cookies Version>", token: "<Token>")
 
         // * * Google Ads
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        GADMobileAds.sharedInstance().start()
+
+        // * * * Firebase setup
+        FirebaseApp.configure()
 
         return true
     }
@@ -49,7 +47,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
-
-
 }
 

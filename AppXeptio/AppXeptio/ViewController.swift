@@ -13,7 +13,11 @@ import GoogleMobileAds
 
 class ViewController: UIViewController {
 
-    var bannerView: GADBannerView!
+    @IBOutlet private weak var lblError: UILabel!
+
+    // Google Ads
+    private var bannerView: GADBannerView!
+    private var interstitialView: GADInterstitialAd?
 
     // MARK: Life Cycle
     override func viewDidLoad() {
@@ -67,6 +71,15 @@ class ViewController: UIViewController {
 
         Axeptio.shared.setEventListener(axeptioListener)
     }
+
+    // MARK: UI Messages
+    private func showMessage(_ message: String) {
+        lblError.text = message
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            self?.lblError.text = nil
+        }
+    }
 }
 
 // MARK: - Button Actions
@@ -76,13 +89,32 @@ extension ViewController {
         print("Consent shown")
     }
 
-    @IBAction private func showGoogleAd() {
-        print("Google Ad shown")
+    @IBAction private func showGoogleAd(_ sender: UIButton) {
 
-        bannerView.adUnitID = "ca-app-pub-3940256099942544/2435281174"
-        bannerView.rootViewController = self
+        switch sender.tag {
+        case 1:
 
-        bannerView.load(GADRequest())
+            Task {
+                do {
+                    // "ca-app-pub-7637060564520573/2715222893" // real project
+                    let myAd = try await GADInterstitialAd.load(withAdUnitID: "ca-app-pub-3940256099942544/4411468910", request: GADRequest())
+
+                    interstitialView = myAd
+                    interstitialView?.fullScreenContentDelegate = self
+                    interstitialView?.present(fromRootViewController: self)
+
+                } catch {
+                    showMessage(error.localizedDescription)
+                }
+            }
+
+        default:
+            print("Google Ad Banner shown")
+
+            bannerView.adUnitID = "ca-app-pub-3940256099942544/2435281174"
+            bannerView.rootViewController = self
+            bannerView.load(GADRequest())
+        }
     }
 
     @IBAction private func clearConsent() {
@@ -97,7 +129,7 @@ extension ViewController {
 }
 
 // MARK: - Google Ads Setup
-extension ViewController: GADBannerViewDelegate {
+extension ViewController: GADBannerViewDelegate, GADFullScreenContentDelegate {
     private func setupGoogleBanner() {
         let viewWidth = view.frame.inset(by: view.safeAreaInsets).width
         let adaptiveSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
@@ -130,11 +162,19 @@ extension ViewController: GADBannerViewDelegate {
           ])
       }
 
+    // For Banner
     func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
       print("bannerViewDidReceiveAd")
     }
 
     func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: any Error) {
-        print("Google Ad Error: ", error.localizedDescription)
+        print("Google Ad Banner Error: ", error.localizedDescription)
+        showMessage(error.localizedDescription)
+    }
+
+    // For Interstitial
+    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        print("Google Ad Interstitial Error: ", error.localizedDescription)
+        showMessage(error.localizedDescription)
     }
 }

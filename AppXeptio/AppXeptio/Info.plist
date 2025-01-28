@@ -207,5 +207,11 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Your data will be used to deliver personalized ads to you.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
 </dict>
 </plist>
