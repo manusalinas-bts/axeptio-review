@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupGoogleBanner()
+        setupAxeptioListeners()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -51,14 +52,14 @@ class ViewController: UIViewController {
     // MARK: Axeptio Listeners
     private func setupAxeptioListeners() {
         let axeptioListener = AxeptioEventListener()
-        axeptioListener.onPopupClosedEvent = {
-            print("Popup was closed")
+        axeptioListener.onPopupClosedEvent = { [weak self] in
+            self?.showMessage("Consent was closed")
         }
-        axeptioListener.onConsentChanged = {
-            print("Consent changed")
+        axeptioListener.onConsentChanged = { [weak self] in
+            self?.showMessage("Consent changed")
         }
-        axeptioListener.onGoogleConsentModeUpdate = { google in
-            print(google.description)
+        axeptioListener.onGoogleConsentModeUpdate = { [weak self] google in
+            self?.showMessage("Google consednt updated")
 
             Analytics.setConsent([
                 .analyticsStorage: google.analyticsStorage == GoogleConsentStatus.granted ? .granted : .denied,
@@ -74,19 +75,40 @@ class ViewController: UIViewController {
 
     // MARK: UI Messages
     private func showMessage(_ message: String) {
+        lblError.backgroundColor = .systemYellow
         lblError.text = message
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            self?.lblError.text = nil
-        }
+        // Cancel previous execution
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(cleanMessage), object: nil)
+
+        // Schedule clean message after 5 min
+        perform(#selector(cleanMessage), with: nil, afterDelay: 5)
+    }
+
+    @objc
+    private func cleanMessage() {
+        lblError.backgroundColor = .clear
+        lblError.text = nil
     }
 }
 
 // MARK: - Button Actions
 extension ViewController {
-    @IBAction private func showAxeptioConsent() {
+    @IBAction private func showAxeptioConsent(_ sender: UIButton) {
+        switch sender.tag {
+        case 1:
+            // Axeptio Google v2 Concent
+            Axeptio.shared.initialize(targetService: .brands, clientId: "679901100d9a47f71b01afdf", cookiesVersion: "appxeptio-google-manu")
+            showMessage("Showing Axeptio Google v2 Consent")
+
+        default:
+            // Axeptio Banner Consent
+            Axeptio.shared.initialize(targetService: .brands, clientId: "679901100d9a47f71b01afdf", cookiesVersion: "appxeptio-en-MX-LAT")
+            showMessage("Showing Axeptio Banner Consent")
+        }
+
+        // Launching consent
         Axeptio.shared.showConsentScreen()
-        print("Consent shown")
     }
 
     @IBAction private func showGoogleAd(_ sender: UIButton) {
@@ -99,6 +121,8 @@ extension ViewController {
                     // "ca-app-pub-7637060564520573/2715222893" // real project
                     let myAd = try await GADInterstitialAd.load(withAdUnitID: "ca-app-pub-3940256099942544/4411468910", request: GADRequest())
 
+                    showMessage("Loading Google Ad Intersitial Fullscreen")
+
                     interstitialView = myAd
                     interstitialView?.fullScreenContentDelegate = self
                     interstitialView?.present(fromRootViewController: self)
@@ -109,7 +133,7 @@ extension ViewController {
             }
 
         default:
-            print("Google Ad Banner shown")
+            showMessage("Loading Google Ad Banner")
 
             bannerView.adUnitID = "ca-app-pub-3940256099942544/2435281174"
             bannerView.rootViewController = self
@@ -119,7 +143,7 @@ extension ViewController {
 
     @IBAction private func clearConsent() {
         Axeptio.shared.clearConsent()
-        print("Consent cleared")
+        showMessage("UserDefaults consent data cleaned")
     }
 
     @IBAction private func showBrowser() {
@@ -168,13 +192,11 @@ extension ViewController: GADBannerViewDelegate, GADFullScreenContentDelegate {
     }
 
     func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: any Error) {
-        print("Google Ad Banner Error: ", error.localizedDescription)
-        showMessage(error.localizedDescription)
+        showMessage("Google Ad Banner Error: \(error.localizedDescription)")
     }
 
     // For Interstitial
     func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
-        print("Google Ad Interstitial Error: ", error.localizedDescription)
-        showMessage(error.localizedDescription)
+        showMessage("Google Ad Interstitial Error: \(error.localizedDescription)")
     }
 }

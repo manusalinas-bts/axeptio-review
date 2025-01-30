@@ -16,11 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // * * * Axeptio setup
         // sample init
-        Axeptio.shared.initialize(
-            targetService: .brands,
-            clientId: "679901100d9a47f71b01afdf",
-            cookiesVersion: "appxeptio-en-MX-LAT"
-        )
+//        Axeptio.shared.initialize(targetService: .brands, clientId: "679901100d9a47f71b01afdf", cookiesVersion: "appxeptio-google-manu"//"appxeptio-en-MX-LAT")
 
         // or with a token set from an other device (you are in charge to store and pass the token along between devices)
         //Axeptio.shared.initialize(targetService: targetService, clientId: "<Your Client ID>", cookiesVersion: "<Your Cookies Version>", token: "<Token>")
