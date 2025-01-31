@@ -68,7 +68,6 @@ class ViewController: UIViewController {
                 .adUserData: google.adUserData == GoogleConsentStatus.granted ? .granted : .denied,
                 .adPersonalization: google.adPersonalization == GoogleConsentStatus.granted ? .granted : .denied
             ])
-
         }
 
         Axeptio.shared.setEventListener(axeptioListener)
