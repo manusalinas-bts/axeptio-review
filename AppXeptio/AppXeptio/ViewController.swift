@@ -13,6 +13,7 @@ import GoogleMobileAds
 
 class ViewController: UIViewController {
 
+    // Outlets
     @IBOutlet private weak var lblError: UILabel!
 
     // Google Ads
@@ -49,7 +50,7 @@ class ViewController: UIViewController {
         }
     }
 
-    // MARK: Axeptio Listeners
+    // MARK: Setups
     private func setupAxeptioListeners() {
         let axeptioListener = AxeptioEventListener()
         axeptioListener.onPopupClosedEvent = { [weak self] in
@@ -73,7 +74,16 @@ class ViewController: UIViewController {
         Axeptio.shared.setEventListener(axeptioListener)
     }
 
-    // MARK: UI Messages
+    private func setupGoogleBanner() {
+        let viewWidth = view.frame.inset(by: view.safeAreaInsets).width
+        let adaptiveSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
+        bannerView = GADBannerView(adSize: adaptiveSize)
+        bannerView.delegate = self
+
+        addBannerViewToView(bannerView)
+    }
+
+    // MARK: UI Utils
     private func showMessage(_ message: String) {
         lblError.backgroundColor = .systemYellow
         lblError.text = message
@@ -90,10 +100,31 @@ class ViewController: UIViewController {
         lblError.backgroundColor = .clear
         lblError.text = nil
     }
-}
 
-// MARK: - Button Actions
-extension ViewController {
+    private func addBannerViewToView(_ bannerView: GADBannerView) {
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bannerView)
+        // This example doesn't give width or height constraints, as the provided
+        // ad size gives the banner an intrinsic content size to size the view.
+        view.addConstraints(
+            [NSLayoutConstraint(item: bannerView,
+                                attribute: .bottom,
+                                relatedBy: .equal,
+                                toItem: view.safeAreaLayoutGuide,
+                                attribute: .bottom,
+                                multiplier: 1,
+                                constant: 0),
+             NSLayoutConstraint(item: bannerView,
+                                attribute: .centerX,
+                                relatedBy: .equal,
+                                toItem: view,
+                                attribute: .centerX,
+                                multiplier: 1,
+                                constant: 0)
+            ])
+    }
+
+    // MARK: Button Actions
     @IBAction private func showAxeptioConsent(_ sender: UIButton) {
         switch sender.tag {
         case 1:
@@ -152,43 +183,12 @@ extension ViewController {
     }
 }
 
-// MARK: - Google Ads Setup
+// MARK: - Google Ads Setup (GADBannerViewDelegate & GADFullScreenContentDelegate)
 extension ViewController: GADBannerViewDelegate, GADFullScreenContentDelegate {
-    private func setupGoogleBanner() {
-        let viewWidth = view.frame.inset(by: view.safeAreaInsets).width
-        let adaptiveSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
-        bannerView = GADBannerView(adSize: adaptiveSize)
-        bannerView.delegate = self
-
-        addBannerViewToView(bannerView)
-    }
-
-    private func addBannerViewToView(_ bannerView: GADBannerView) {
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bannerView)
-        // This example doesn't give width or height constraints, as the provided
-        // ad size gives the banner an intrinsic content size to size the view.
-        view.addConstraints(
-          [NSLayoutConstraint(item: bannerView,
-                              attribute: .bottom,
-                              relatedBy: .equal,
-                              toItem: view.safeAreaLayoutGuide,
-                              attribute: .bottom,
-                              multiplier: 1,
-                              constant: 0),
-          NSLayoutConstraint(item: bannerView,
-                              attribute: .centerX,
-                              relatedBy: .equal,
-                              toItem: view,
-                              attribute: .centerX,
-                              multiplier: 1,
-                              constant: 0)
-          ])
-      }
 
     // For Banner
     func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-      print("bannerViewDidReceiveAd")
+        print("bannerViewDidReceiveAd")
     }
 
     func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: any Error) {
