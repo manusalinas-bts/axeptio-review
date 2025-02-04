@@ -33,6 +33,9 @@ The project consists of 2 modules:
 * `sampleSwift`: Illustrates the usage of the **Axeptio SDK** with **Swift** and **Swift Package Manager (SPM)**.
 * `sampleObjectiveC`: Demonstrates the integration of the **Axeptio SDK** with **Objective-C** and **CocoaPods**.
 
+
+> **[!IMPORTANT]**
+> Sample apps contain _testable_ versions for `clientId` and `cookies version`. **_You need to have a plan on your Axeptio account for testing your owns consents._**
 ---
 
 ## Getting Started
@@ -145,7 +148,7 @@ The SDK will automatically update the `UserDefaults` according to the TCFv2 [IAB
 
 ## Setting Up the SDK UI
 
-> [!IMPORTANT]
+> **[!IMPORTANT]**
 > The setupUI method should be called only from your main/entry UIViewController which in most cases should be once per app launch. Therefore, by calling this method the consent notice and preference views will only be displayed if it is required and only once the SDK is ready.
 
 To display UI elements and interact with the user, call the `setupUI` method from your main `UIViewController`.
