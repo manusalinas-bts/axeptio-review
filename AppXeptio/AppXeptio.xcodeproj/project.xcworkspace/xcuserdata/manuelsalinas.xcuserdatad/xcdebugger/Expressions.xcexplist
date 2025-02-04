@@ -3,6 +3,14 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "ViewController.clearConsent():ViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Axeptio.shared">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ViewController.showAxeptioConsent():ViewController.swift">
          <PersistentStrings>
             <PersistentString
