@@ -12,12 +12,12 @@ This repo contains the **Sample Host App** created by **Blue Trail Software** te
 ### Sample Includes:
 
 - Source code guidelines
-- Axeptio SDK integration
-    - Custom consent banner 
-    - Google consent banner
-- Google AdMob SDK integration
-    - Banner Style
-    - Interstitial Style
+- **Axeptio SDK** integration
+    - _Custom_ consent banner 
+    - _Google_ consent banner
+- **Google AdMob SDK** integration
+    - _Banner_ Style
+    - _Interstitial_ Style
 
 --- 
 
